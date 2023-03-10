@@ -6,11 +6,14 @@ services:
       context: gateway
       dockerfile: Dockerfile
     container_name: gateway-lodas-dep
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
     ports:
       - 8080:8080
 
   lodas:
-    image: gcr.io/lodas-project/github.com/manhrev/lodas/lodas:7842d6127c382e0ad9c4625b26f506da2931353a
+    image: gcr.io/lodas-project/github.com/manhrev/lodas/lodas:latest
     container_name: lodas-service-dep
     depends_on:
       - lodas_db
@@ -21,12 +24,16 @@ services:
       DB_HOST: lodas_db
       DB_PORT: 3306
       DB_NAME: lodas
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
 
   auth:
-    image: gcr.io/lodas-project/github.com/manhrev/lodas/auth:7842d6127c382e0ad9c4625b26f506da2931353a
+    image: gcr.io/lodas-project/github.com/manhrev/lodas/auth:latest
     container_name: auth-lodas-dep
     volumes:
-      - ./backend/auth:/app
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
     depends_on:
       - lodas_db
       - redis
@@ -50,6 +57,8 @@ services:
     container_name: 'db-lodas-dep'
     volumes:
       - "./tmp/db/lodas:/var/lib/mysql"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
     ports:
       - 33306:3306
 
