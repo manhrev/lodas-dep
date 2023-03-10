@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  gateway:
+    build:
+      context: gateway
+      dockerfile: Dockerfile
+    container_name: gateway-lodas-dep
+    ports:
+      - 8080:8080
+
+  lodas:
+    image: gcr.io/lodas-project/github.com/manhrev/lodas/lodas:7842d6127c382e0ad9c4625b26f506da2931353a
+    container_name: lodas-service-dep
+    depends_on:
+      - lodas_db
+    environment:
+      LISTEN_PORT: 8080
+      DB_USERNAME: root
+      DB_PASSWORD: password@1
+      DB_HOST: lodas_db
+      DB_PORT: 3306
+      DB_NAME: lodas
+
+  auth:
+    image: gcr.io/lodas-project/github.com/manhrev/lodas/auth:7842d6127c382e0ad9c4625b26f506da2931353a
+    container_name: auth-lodas-dep
+    volumes:
+      - ./backend/auth:/app
+    depends_on:
+      - lodas_db
+      - redis
+    environment:
+      LISTEN_PORT: 8080
+      DB_USERNAME: root
+      DB_PASSWORD: password@1
+      DB_HOST: lodas_db
+      DB_PORT: 3306
+      DB_NAME: lodas
+      CACHE_HOST: redis
+      CACHE_PORT: 6379
+      CACHE_PASSWORD: ""
+      CACHE_DB: 0
+
+  lodas_db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password@1
+      MYSQL_DATABASE: lodas
+    container_name: 'db-lodas-dep'
+    volumes:
+      - "./tmp/db/lodas:/var/lib/mysql"
+    ports:
+      - 33306:3306
+
+  redis:
+    image: redis:latest
+    container_name: redis-lodas-dep
+    ports:
+      - "6379:6379"
