@@ -48,6 +48,7 @@ services:
       CACHE_PORT: 6379
       CACHE_PASSWORD: ""
       CACHE_DB: 0
+    pull_policy: always
 
   lodas_db:
     image: mysql
@@ -61,6 +62,7 @@ services:
       - "/etc/timezone:/etc/timezone:ro"
     ports:
       - 33306:3306
+    pull_policy: always
 
   redis:
     image: redis:latest
